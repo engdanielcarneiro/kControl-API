@@ -1,6 +1,29 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb){
+        cb(null, './uploads/')
+    },
+    filename: function (req, file, cb){
+        cb(null, file.originalname);
+    }
+})
+
+const filefilter = (req, file, cb) => {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
+        cb(null, true);
+    } else {
+        cb(new Error('Extensão de arquivo inválida!'), false);
+    }
+}
+
+const upload = multer({
+    storage: storage,
+    filefilter: filefilter
+})
 
 const Usuario = require('../models/usuario');
 const {disconnect} = require('process');
@@ -21,6 +44,7 @@ router.get('/', (req, res, next) => {
                         cpf: doc.cpf,
                         dtNascimento: doc.dtNascimento,
                         btAdm: doc.btAdm,
+                        foto: doc.foto,
                         codigoRequest: {
                             type: 'GET por Codigo',
                             url: 'http://localhost:3030/usuarios/codigo/' + doc.codigo
@@ -42,7 +66,7 @@ router.get('/', (req, res, next) => {
         });
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', upload.single('foto'), (req, res, next) => {
     const usuario = new Usuario({
         _id: new mongoose.Types.ObjectId(),
         nome: req.body.nome,
@@ -51,7 +75,8 @@ router.post('/', (req, res, next) => {
         curso: req.body.curso,
         cpf: req.body.cpf,
         dtNascimento: req.body.dtNascimento,
-        btAdm: req.body.btAdm
+        btAdm: req.body.btAdm,
+        foto: req.file.path
     });
     usuario
         .save()
@@ -68,6 +93,7 @@ router.post('/', (req, res, next) => {
                     cpf: result.cpf,
                     dtNascimento: result.dtNascimento,
                     btAdm: result.btAdm,
+                    foto: result.foto,
                     codigoRequest: {
                         type: 'GET por Codigo',
                         url: 'http://localhost:3030/usuarios/codigo/' + result.codigo
@@ -90,7 +116,7 @@ router.post('/', (req, res, next) => {
 router.get('/codigo/:codigoUsuario', (req, res, next) => {
 const codigo = req.params.codigoUsuario;
 Usuario.find({codigo: codigo})
-    .select('nome codigo senha curso cpf dtNascimento btAdm _id')
+    .select('nome codigo senha curso cpf dtNascimento btAdm _id foto')
     .exec()
     .then(doc => {
         console.log("From database:", doc);
@@ -161,7 +187,7 @@ router.patch('/:codigoUsuario', (req, res, next) => {
             message: 'Usuário atualizado!',
             request: {
                 type: 'GET',
-                url: 'http://localhost:3030/usuarios/' + codigo
+                url: 'http://localhost:3030/usuarios/codigo/' + codigo
             }
         });
     })
@@ -190,7 +216,8 @@ router.delete('/:codigoUsuario', (req, res, next) => {
                     curso: 'String',
                     cpf: 'String',  
                     dtNascimento: 'String',
-                    btAdm: 'Bool'
+                    btAdm: 'Bool',
+                    foto: "Arquivo png/jpeg"
                 }
             }
         })

@@ -8,7 +8,8 @@ const productSchema = mongoose.Schema({
     curso: {type: String, required: true },
     cpf: {type: String, required: true },
     dtNascimento: {type: String, required: true },
-    btAdm: {type: Boolean, default: 0}
+    btAdm: {type: Boolean, default: 0},
+    foto: {type: String, required: true}
 });
 
 module.exports = mongoose.model('Usuario', productSchema);
