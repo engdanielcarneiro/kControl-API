@@ -4,16 +4,16 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb){
+    destination: function (req, file, cb) {
         cb(null, './uploads/')
     },
-    filename: function (req, file, cb){
+    filename: function (req, file, cb) {
         cb(null, file.originalname);
     }
 })
 
 const filefilter = (req, file, cb) => {
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
         cb(null, true);
     } else {
         cb(new Error('Extensão de arquivo inválida!'), false);
@@ -26,8 +26,9 @@ const upload = multer({
 })
 
 const Usuario = require('../models/usuario');
-const {disconnect} = require('process');
+const { disconnect } = require('process');
 
+// Get users request
 router.get('/', (req, res, next) => {
     Usuario.find()
         .exec()
@@ -66,6 +67,69 @@ router.get('/', (req, res, next) => {
         });
 });
 
+// Get user by Codigo request
+router.get('/codigo/:codigoUsuario', (req, res, next) => {
+    const codigo = req.params.codigoUsuario;
+    Usuario.find({ codigo: codigo })
+        .select('nome codigo senha curso cpf dtNascimento btAdm _id foto')
+        .exec()
+        .then(doc => {
+            console.log("From database:", doc);
+            if (doc) {
+                return res.status(200).json({
+                    usuario: doc,
+                    request: {
+                        type: 'GET',
+                        description: "Veja todos os usuários:",
+                        url: 'http://localhost:3030/usuarios/'
+                    }
+                });
+            } else {
+                return res.status(404).json({
+                    message: 'Nenhum usuário encontrado com esse código.'
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
+});
+
+//  Get user by CPF request
+router.get('/cpf/:cpf', (req, res, next) => {
+    const cpf = req.params.cpf;
+    Usuario.find({ cpf: cpf })
+        .select('nome codigo senha curso cpf dtNascimento btAdm _id')
+        .exec()
+        .then(doc => {
+            console.log("From database:", doc);
+            if (doc) {
+                return res.status(200).json({
+                    usuario: doc,
+                    request: {
+                        type: 'GET',
+                        description: "Veja todos os usuários:",
+                        url: 'http://localhost:3030/usuarios/'
+                    }
+                });
+            } else {
+                return res.status(404).json({
+                    message: 'Nenhum usuário encontrado com esse cpf.'
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
+});
+
+// New user request
 router.post('/', upload.single('foto'), (req, res, next) => {
     const usuario = new Usuario({
         _id: new mongoose.Types.ObjectId(),
@@ -76,7 +140,6 @@ router.post('/', upload.single('foto'), (req, res, next) => {
         cpf: req.body.cpf,
         dtNascimento: req.body.dtNascimento,
         btAdm: req.body.btAdm,
-        foto: req.file.path
     });
     usuario
         .save()
@@ -113,66 +176,26 @@ router.post('/', upload.single('foto'), (req, res, next) => {
         })
 });
 
-router.get('/codigo/:codigoUsuario', (req, res, next) => {
-const codigo = req.params.codigoUsuario;
-Usuario.find({codigo: codigo})
-    .select('nome codigo senha curso cpf dtNascimento btAdm _id foto')
+// Upload image request
+router.post('/codigo/:codigoUsuario', upload.single('foto'), (req, res, next) => {
+    const codigo = req.params.codigoUsuario;
+    Usuario
+    .update({codigo:codigo}, {$set: {foto: req.file.path.replace("\\","/") }})
     .exec()
-    .then(doc => {
-        console.log("From database:", doc);
-        if (doc) {
-            return res.status(200).json({
-                usuario: doc,
-                request: {
-                    type: 'GET',
-                    description: "Veja todos os usuários:",
-                    url: 'http://localhost:3030/usuarios/'
-                }
-            });
-        } else {
-            return res.status(404).json({
-                message: 'Nenhum usuário encontrado com esse código.'
-            });
-        }
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({
-            error: err
-        })
-    })
-});
-
-router.get('/cpf/:cpf', (req, res, next) => {
-    const cpf = req.params.cpf;
-    Usuario.find({cpf: cpf})
-        .select('nome codigo senha curso cpf dtNascimento btAdm _id')
-        .exec()
-        .then(doc => {
-            console.log("From database:", doc);
-            if (doc) {
-                return res.status(200).json({
-                    usuario: doc,
-                    request: {
-                        type: 'GET',
-                        description: "Veja todos os usuários:",
-                        url: 'http://localhost:3030/usuarios/'
-                    }
-                });
-            } else {
-                return res.status(404).json({
-                    message: 'Nenhum usuário encontrado com esse cpf.'
-                });
+    .then(result => {
+        res.status(200).json({
+            message:'Foto importada com sucesso!',
+            request: {
+                type: 'GET',
+                url: 'http://localhost:3030/' + req.file.path.replace("\\","/")
             }
         })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                error: err
-            })
-        })
-    });
+    })
+    ;
+});
 
+// Update user request
+// [{ "propName" : "value" }]
 router.patch('/:codigoUsuario', (req, res, next) => {
     const codigo = req.params.codigoUsuario;
     const updateOps = {};
@@ -180,54 +203,55 @@ router.patch('/:codigoUsuario', (req, res, next) => {
         updateOps[ops.propName] = ops.value;
     }
     Usuario
-    .update({codigo: codigo}, {$set: updateOps})
-    .exec()
-    .then(result => {
-        res.status(200).json({
-            message: 'Usuário atualizado!',
-            request: {
-                type: 'GET',
-                url: 'http://localhost:3030/usuarios/codigo/' + codigo
-            }
-        });
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({
-            error: err
+        .update({ codigo: codigo }, { $set: updateOps })
+        .exec()
+        .then(result => {
+            res.status(200).json({
+                message: 'Usuário atualizado!',
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3030/usuarios/codigo/' + codigo
+                }
+            });
         })
-    })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
 });
 
+// Delete user request
 router.delete('/:codigoUsuario', (req, res, next) => {
     const codigo = req.params.codigoUsuario;
-    Usuario.remove({codigo: codigo})
-    .exec()
-    .then( result => {
-        res.status(200).json({
-            message: 'Usuário deletado!',
-            request: {
-                type: "POST",
-                url: 'http://localhost:3030/usuarios/',
-                data: {
-                    nome: 'String',
-                    codigo: 'Number',
-                    senha: 'String',
-                    curso: 'String',
-                    cpf: 'String',  
-                    dtNascimento: 'String',
-                    btAdm: 'Bool',
-                    foto: "Arquivo png/jpeg"
+    Usuario.remove({ codigo: codigo })
+        .exec()
+        .then(result => {
+            res.status(200).json({
+                message: 'Usuário deletado!',
+                request: {
+                    type: "POST",
+                    url: 'http://localhost:3030/usuarios/',
+                    data: {
+                        nome: 'String',
+                        codigo: 'Number',
+                        senha: 'String',
+                        curso: 'String',
+                        cpf: 'String',
+                        dtNascimento: 'String',
+                        btAdm: 'Bool',
+                        foto: "Arquivo png/jpeg"
+                    }
                 }
-            }
+            })
         })
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({
-            error: err
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
         })
-    })
 });
 
 module.exports = router;

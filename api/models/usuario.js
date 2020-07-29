@@ -9,7 +9,7 @@ const productSchema = mongoose.Schema({
     cpf: {type: String, required: true },
     dtNascimento: {type: String, required: true },
     btAdm: {type: Boolean, default: 0},
-    foto: {type: String, required: true}
+    foto: {type: String, required: false}
 });
 
 module.exports = mongoose.model('Usuario', productSchema);
