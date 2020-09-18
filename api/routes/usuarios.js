@@ -100,6 +100,8 @@ router.get('/codigo/:codigoUsuario', (req, res, next) => {
 
 //  Get user by CPF request
 router.get('/cpf/:cpf', (req, res, next) => {
+
+    
     const cpf = req.params.cpf;
     Usuario.find({ cpf: cpf })
         .select('nome codigo senha curso cpf dtNascimento btAdm _id')
@@ -129,7 +131,71 @@ router.get('/cpf/:cpf', (req, res, next) => {
         })
 });
 
-// New user request
+// Post login por codigo usuário request
+router.post('/login/codigo', (req, res, next) => {
+    Usuario
+    .find({ codigo: req.body.codigo })
+    .exec()
+    .then(usuario => {
+      if(usuario.length < 1) {
+        return res.status(401).json(
+          {
+             message: 'A autenticação falhou.'
+           });
+      }
+       if (req.body.senha !== usuario[0].senha) {
+         return res.status(401).json(
+           {
+              message: 'A autenticação falhou.',
+            });
+        } else {
+            return res.status(200).json({
+                message: 'Logado com sucesso',
+                usuario: usuario[0].nome,
+            });
+        }
+    })
+    .catch((err) => {
+     console.log(err);
+     res.status(500).json({
+       error: err,
+     });
+   });
+ })
+
+// Post login por cpf usuário request
+router.post('/login/cpf', (req, res, next) => {
+    Usuario
+    .find({ cpf: req.body.cpf })
+    .exec()
+    .then(usuario => {
+      if(usuario.length < 1) {
+        return res.status(401).json(
+          {
+             message: 'A autenticação falhou.'
+           });
+      }
+       if (req.body.senha !== usuario[0].senha) {
+         return res.status(401).json(
+           {
+              message: 'A autenticação falhou.',
+            });
+        } else {
+            return res.status(200).json({
+                message: 'Logado com sucesso',
+                usuario: usuario[0].nome,
+            });
+        }
+    })
+    .catch((err) => {
+     console.log(err);
+     res.status(500).json({
+       error: err,
+     });
+   });
+ })
+
+ // New user request
 router.post('/', upload.single('foto'), (req, res, next) => {
     const usuario = new Usuario({
         _id: new mongoose.Types.ObjectId(),
