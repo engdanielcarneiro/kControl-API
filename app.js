@@ -3,6 +3,7 @@ const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const usuariosRoute = require('./api/routes/usuarios');
 
@@ -16,6 +17,7 @@ mongoose.connect(
 
     mongoose.Promise =  global.Promise;
 
+app.use(cors());
 app.use(morgan('dev'));
 app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({
