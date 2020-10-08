@@ -46,6 +46,7 @@ router.get('/', (req, res, next) => {
                         dtNascimento: doc.dtNascimento,
                         btAdm: doc.btAdm,
                         foto: doc.foto,
+                        url: doc.url,
                         codigoRequest: {
                             type: 'GET por Codigo',
                             url: 'http://localhost:3030/usuarios/codigo/' + doc.codigo
@@ -71,7 +72,7 @@ router.get('/', (req, res, next) => {
 router.get('/codigo/:codigoUsuario', (req, res, next) => {
     const codigo = req.params.codigoUsuario;
     Usuario.find({ codigo: codigo })
-        .select('nome codigo senha curso cpf dtNascimento btAdm _id foto')
+        .select('nome codigo senha curso cpf dtNascimento btAdm _id foto url')
         .exec()
         .then(doc => {
             console.log("From database:", doc);
@@ -104,7 +105,7 @@ router.get('/cpf/:cpf', (req, res, next) => {
     
     const cpf = req.params.cpf;
     Usuario.find({ cpf: cpf })
-        .select('nome codigo senha curso cpf dtNascimento btAdm _id')
+        .select('nome codigo senha curso cpf dtNascimento btAdm _id url')
         .exec()
         .then(doc => {
             console.log("From database:", doc);
@@ -256,8 +257,7 @@ router.post('/codigo/:codigoUsuario', upload.single('foto'), (req, res, next) =>
                 url: 'http://localhost:3030/' + req.file.path.replace("\\","/")
             }
         })
-    })
-    ;
+    });
 });
 
 // Update user request
