@@ -47,6 +47,8 @@ router.get('/', (req, res, next) => {
                         btAdm: doc.btAdm,
                         foto: doc.foto,
                         url: doc.url,
+                        btKit: doc.btKit,
+                        btDigital: doc.btDigital,
                         codigoRequest: {
                             type: 'GET por Codigo',
                             url: 'http://localhost:3030/usuarios/codigo/' + doc.codigo
@@ -121,6 +123,58 @@ router.get('/cpf/:cpf', (req, res, next) => {
             } else {
                 return res.status(404).json({
                     message: 'Nenhum usuário encontrado com esse cpf.'
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
+});
+
+// Get btKit by Codigo request
+router.get('/btkit/:codigoUsuario', (req, res, next) => {
+    const codigo = req.params.codigoUsuario;
+    Usuario.find({ codigo: codigo })
+        .exec()
+        .then(doc => {
+            console.log("From database:", doc);
+            if (doc) {
+                return res.status(200).json({
+                    usuario: doc[0].nome,
+                    btKit: doc[0].btKit,
+                });
+            } else {
+                return res.status(404).json({
+                    message: 'Nenhum usuário encontrado com esse código.'
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
+});
+
+// Get btDigital by Codigo request
+router.get('/btdigital/:codigoUsuario', (req, res, next) => {
+    const codigo = req.params.codigoUsuario;
+    Usuario.find({ codigo: codigo })
+        .exec()
+        .then(doc => {
+            console.log("From database:", doc);
+            if (doc) {
+                return res.status(200).json({
+                    usuario: doc[0].nome,
+                    btDigital: doc[0].btDigital,
+                });
+            } else {
+                return res.status(404).json({
+                    message: 'Nenhum usuário encontrado com esse código.'
                 });
             }
         })
@@ -224,6 +278,7 @@ router.post('/', upload.single('foto'), (req, res, next) => {
                     dtNascimento: result.dtNascimento,
                     btAdm: result.btAdm,
                     foto: result.foto,
+                    url: result.url,
                     codigoRequest: {
                         type: 'GET por Codigo',
                         url: 'http://localhost:3030/usuarios/codigo/' + result.codigo
