@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const usuariosRoute = require('./api/routes/usuarios');
+const kitsRoute = require('./api/routes/kit')
 
 mongoose.connect(
     'mongodb+srv://admin:' +
@@ -39,6 +40,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/usuarios', usuariosRoute);
+app.use('/kits', kitsRoute);
 
 app.use((req, res, next) => {
     const error = new Error('Not found');

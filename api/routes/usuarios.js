@@ -103,8 +103,6 @@ router.get('/codigo/:codigoUsuario', (req, res, next) => {
 
 //  Get user by CPF request
 router.get('/cpf/:cpf', (req, res, next) => {
-
-    
     const cpf = req.params.cpf;
     Usuario.find({ cpf: cpf })
         .select('nome codigo senha curso cpf dtNascimento btAdm _id url')
