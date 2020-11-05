@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Kit = require('../models/kit');
 const { disconnect } = require('process');
 
-//Get kits request
+//Consulta todos os kits
 router.get('/', (req, res, next) => {
     Kit.find()
         .exec()
@@ -16,8 +16,8 @@ router.get('/', (req, res, next) => {
                     return {
                         _id: doc._id,
                         nome: doc.nome,
-                        descricao: doc.descricaoKit,
                         status: doc.status,
+                        descricao: doc.descricao,
                         kitRequest: {
                             type: 'GET Kit por Nome',
                             url: 'http://localhost:3030/kits/' + doc.nome
@@ -35,11 +35,12 @@ router.get('/', (req, res, next) => {
         });
 });
 
+//Consulta kit pelo nome
 router.get('/:nome', (req, res, next) => {
     const kitNome = req.params.nome;
 
     Kit.find({ nome: kitNome})
-        .select('nome descricao _id  status')
+        .select('_id nome status descricao')
         .exec()
         .then(doc => {
             if (doc){
@@ -65,6 +66,7 @@ router.get('/:nome', (req, res, next) => {
         })
 });
 
+//Cria um kit 
 router.post('/', (req, res, next) => { 
     const kit = new Kit({
         _id: new mongoose.Types.ObjectId(),
@@ -90,6 +92,36 @@ router.post('/', (req, res, next) => {
             });
         })
         .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
+});
+
+//Atualiza descrição do kit
+// [{ "propName" : "value" }]
+router.patch('/:_id', (req, res, next) => {
+    const id = req.params._id;
+    const updateOps = {};
+
+    for (const ops of req.body){
+        updateOps[ops.propName] = ops.value;
+    }
+    
+    Kit
+        .update({_id: id}, {$set: updateOps})
+        .exec()
+        .then(result => {
+            res.status(200).json({
+                message: 'Descrição do Kit atualizada!',
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3030/kits/' + id
+                }
+            });
+        })
+        .catch( err => {
             console.log(err);
             res.status(500).json({
                 error: err
