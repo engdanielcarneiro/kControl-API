@@ -4,7 +4,7 @@ const productSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     nome: {type: String, required: true},
     descricao: {type: String, required: true},
-    status: {type: Boolean, default: 0},
+    status: {type: String, required: true},
 });
 
 module.exports = mongoose.model('Kit', productSchema);
