@@ -158,4 +158,30 @@ router.patch('/:id', (req, res, next) => {
         })
 });
 
+router.delete('/:_id', (req, res, next) => {
+  const id = req.params._id;
+  Kit.remove({ _id: id })
+      .exec()
+      .then(result => {
+          res.status(200).json({
+              message: 'Kit deletado!',
+              request: {
+                  type: "POST",
+                  url: 'http://localhost:3030/kits/',
+                  data: {
+                      nome: 'String',
+                      descricao: 'String',
+                      status: 'String',
+                  }
+              }
+          })
+      })
+      .catch(err => {
+          console.log(err);
+          res.status(500).json({
+              error: err
+          })
+      })
+});
+
 module.exports = router;
