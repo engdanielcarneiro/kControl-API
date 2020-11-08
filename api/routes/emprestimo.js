@@ -132,7 +132,7 @@ router.patch('/:id', (req, res, next) => {
 
 
 router.delete('/:id', (req, res, next) => {
-    const id = req.params._id;
+    const id = req.params.id;
     Emprestimo.remove({ _id: id })
         .exec()
         .then(result => {
