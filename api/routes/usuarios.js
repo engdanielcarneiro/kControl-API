@@ -26,7 +26,6 @@ const upload = multer({
 })
 
 const Usuario = require('../models/usuario');
-const { disconnect } = require('process');
 
 // Get users request
 router.get('/', (req, res, next) => {
@@ -49,14 +48,6 @@ router.get('/', (req, res, next) => {
                         url: doc.url,
                         btKit: doc.btKit,
                         btDigital: doc.btDigital,
-                        codigoRequest: {
-                            type: 'GET por Codigo',
-                            url: 'http://localhost:3030/usuarios/codigo/' + doc.codigo
-                        },
-                        cpfRequest: {
-                            type: 'Get por CPF',
-                            url: 'http://localhost:3030/usuarios/cpf/' + doc.cpf
-                        }
                     }
                 })
             };
@@ -158,6 +149,32 @@ router.get('/btkit/:codigoUsuario', (req, res, next) => {
         })
 });
 
+// Get btKit by id request
+router.get('/btkit/id/:id', (req, res, next) => {
+    const id = req.params.id;
+    Usuario.find({ _id: id })
+        .exec()
+        .then(doc => {
+            console.log("From database:", doc);
+            if (doc) {
+                return res.status(200).json({
+                    usuario: doc[0].nome,
+                    btKit: doc[0].btKit,
+                });
+            } else {
+                return res.status(404).json({
+                    message: 'Nenhum usuário encontrado com esse id.'
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
+});
+
 // Get btDigital by Codigo request
 router.get('/btdigital/:codigoUsuario', (req, res, next) => {
     const codigo = req.params.codigoUsuario;
@@ -173,6 +190,32 @@ router.get('/btdigital/:codigoUsuario', (req, res, next) => {
             } else {
                 return res.status(404).json({
                     message: 'Nenhum usuário encontrado com esse código.'
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
+});
+
+// Get btDigital by id request
+router.get('/btdigital/id/:id', (req, res, next) => {
+    const id = req.params.id;
+    Usuario.find({ _id: id })
+        .exec()
+        .then(doc => {
+            console.log("From database:", doc);
+            if (doc) {
+                return res.status(200).json({
+                    usuario: doc[0].nome,
+                    btDigital: doc[0].btDigital,
+                });
+            } else {
+                return res.status(404).json({
+                    message: 'Nenhum usuário encontrado com esse id.'
                 });
             }
         })
@@ -315,22 +358,18 @@ router.post('/codigo/:codigoUsuario', upload.single('foto'), (req, res, next) =>
 
 // Update user request
 // [{ "propName" : "value" }]
-router.patch('/:codigoUsuario', (req, res, next) => {
-    const codigo = req.params.codigoUsuario;
+router.patch('/:id', (req, res, next) => {
+    const id = req.params.id;
     const updateOps = {};
     for (const ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
     Usuario
-        .update({ codigo: codigo }, { $set: updateOps })
+        .update({ _id: id }, { $set: updateOps })
         .exec()
         .then(result => {
             res.status(200).json({
                 message: 'Usuário atualizado!',
-                request: {
-                    type: 'GET',
-                    url: 'http://localhost:3030/usuarios/codigo/' + codigo
-                }
             });
         })
         .catch(err => {
@@ -372,5 +411,22 @@ router.delete('/:codigoUsuario', (req, res, next) => {
             })
         })
 });
+
+// Delete all request
+router.delete('/really/all', (req, res, next) => {
+    Usuario.remove({})
+        .exec()
+        .then(result => {
+            res.status(200).json({
+                message: 'Todos os usuários apagados.',
+            })
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
+  });
 
 module.exports = router;

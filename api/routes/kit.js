@@ -130,7 +130,7 @@ router.post("/", (req, res, next) => {
 });
 
 
-// Update user request
+// Update kit request
 // [{ "propName" : "value" }]
 router.patch('/:id', (req, res, next) => {
     const id = req.params.id;
@@ -144,10 +144,6 @@ router.patch('/:id', (req, res, next) => {
         .then(result => {
             res.status(200).json({
                 message: 'Kit atualizado!',
-                request: {
-                    type: 'GET',
-                    url: 'http://localhost:3030/kits/id/' + id
-                }
             });
         })
         .catch(err => {
@@ -158,6 +154,8 @@ router.patch('/:id', (req, res, next) => {
         })
 });
 
+
+// Delete kit request
 router.delete('/:_id', (req, res, next) => {
   const id = req.params._id;
   Kit.remove({ _id: id })
@@ -165,15 +163,23 @@ router.delete('/:_id', (req, res, next) => {
       .then(result => {
           res.status(200).json({
               message: 'Kit deletado!',
-              request: {
-                  type: "POST",
-                  url: 'http://localhost:3030/kits/',
-                  data: {
-                      nome: 'String',
-                      descricao: 'String',
-                      status: 'String',
-                  }
-              }
+          })
+      })
+      .catch(err => {
+          console.log(err);
+          res.status(500).json({
+              error: err
+          })
+      })
+});
+
+// Delete all kits request
+router.delete('/really/all', (req, res, next) => {
+  Kit.remove({})
+      .exec()
+      .then(result => {
+          res.status(200).json({
+              message: 'Todos os kits apagados.',
           })
       })
       .catch(err => {
