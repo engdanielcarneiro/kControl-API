@@ -122,6 +122,35 @@ router.get('/cpf/:cpf', (req, res, next) => {
             })
         })
 });
+//  Get user by id request
+router.get('/id/:id', (req, res, next) => {
+    const id = req.params.id;
+    Usuario.find({ _id: id })
+        .exec()
+        .then(doc => {
+            console.log("From database:", doc);
+            if (doc) {
+                return res.status(200).json({
+                    usuario: doc,
+                    request: {
+                        type: 'GET',
+                        description: "Veja todos os usuários:",
+                        url: 'http://localhost:3030/usuarios/'
+                    }
+                });
+            } else {
+                return res.status(404).json({
+                    message: 'Nenhum usuário encontrado com esse cpf.'
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
+});
 
 // Get btKit by Codigo request
 router.get('/btkit/:codigoUsuario', (req, res, next) => {
@@ -247,7 +276,7 @@ router.post('/login/codigo', (req, res, next) => {
         } else {
             return res.status(200).json({
                 message: 'Logado com sucesso',
-                usuario: usuario[0].nome,
+                usuario: usuario[0],
             });
         }
     })
@@ -279,7 +308,7 @@ router.post('/login/cpf', (req, res, next) => {
         } else {
             return res.status(200).json({
                 message: 'Logado com sucesso',
-                usuario: usuario[0].nome,
+                usuario: usuario[0],
             });
         }
     })
