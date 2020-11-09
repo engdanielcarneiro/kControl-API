@@ -9,6 +9,16 @@ const usuariosRoute = require('./api/routes/usuarios');
 const kitsRoute = require('./api/routes/kit');
 const emprestimosRoute = require('./api/routes/emprestimo');
 
+
+const http = require('http');
+const app = require('./app');
+
+const port = process.env.PORT || 3030;
+
+const server = http.createServer(app);
+
+server.listen(port);
+
 mongoose.connect(
     'mongodb+srv://admin:' +
     process.env.MONGO_ATLAS_PW +
