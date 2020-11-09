@@ -10,7 +10,7 @@ const kitsRoute = require('./api/routes/kit');
 const emprestimosRoute = require('./api/routes/emprestimo');
 
 
-const https = require('https');
+const https = require('http');
 
 const port = process.env.PORT || 3030;
 
