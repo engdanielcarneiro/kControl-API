@@ -31,7 +31,8 @@ server.listen(port);
 mongoose.connect(
     'mongodb+srv://admin:admin@kcontrol-9uglk.gcp.mongodb.net/test?retryWrites=true&w=majority', {
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        useCreateIndex: true,
 })
     
 mongoose.Promise =  global.Promise;
