@@ -18,7 +18,7 @@ const server = https.createServer(app);
 
 server.listen(port);
 
-mongoose.connect(
+/*mongoose.connect(
     'mongodb+srv://admin:' +
     process.env.MONGO_ATLAS_PW +
     '@kcontrol-9uglk.gcp.mongodb.net/test?retryWrites=true&w=majority', {
@@ -26,7 +26,15 @@ mongoose.connect(
         useUnifiedTopology: true
     })
 
-    mongoose.Promise =  global.Promise;
+    mongoose.Promise =  global.Promise;*/
+
+mongoose.connect(
+    'mongodb+srv://admin:admin@kcontrol-9uglk.gcp.mongodb.net/test?retryWrites=true&w=majority', {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+})
+    
+mongoose.Promise =  global.Promise;
 
 app.use(cors());
 app.use(morgan('dev'));
