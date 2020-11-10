@@ -65,7 +65,7 @@ router.get('/', (req, res, next) => {
 router.get('/codigo/:codigoUsuario', (req, res, next) => {
     const codigo = req.params.codigoUsuario;
     Usuario.find({ codigo: codigo })
-        .select('nome codigo senha curso cpf dtNascimento btAdm _id foto url')
+        .select('nome codigo senha curso cpf dtNascimento btAdm _id foto url btKit')
         .exec()
         .then(doc => {
             console.log("From database:", doc);
