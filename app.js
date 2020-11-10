@@ -9,23 +9,16 @@ const usuariosRoute = require('./api/routes/usuarios');
 const kitsRoute = require('./api/routes/kit');
 const emprestimosRoute = require('./api/routes/emprestimo');
 
-// mongoose.connect(
-//     'mongodb+srv://admin:' +
-//     process.env.MONGO_ATLAS_PW +
-//     '@kcontrol-9uglk.gcp.mongodb.net/test?retryWrites=true&w=majority', {
-//         useNewUrlParser: true,
-//         useUnifiedTopology: true
-//     })
+mongoose.connect(
+    'mongodb+srv://admin:' +
+    process.env.MONGO_ATLAS_PW +
+    '@kcontrol-9uglk.gcp.mongodb.net/test?retryWrites=true&w=majority', {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    })
 
-//     mongoose.Promise =  global.Promise;
+    mongoose.Promise =  global.Promise;
 
-    mongoose.connect(
-        'mongodb+srv://admin:admin@kcontrol-9uglk.gcp.mongodb.net/test?retryWrites=true&w=majority', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        })
-    
-        mongoose.Promise =  global.Promise;
 
 app.use(cors());
 app.use(morgan('dev'));
