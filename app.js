@@ -28,14 +28,14 @@ server.listen(port);
 
     mongoose.Promise =  global.Promise;*/
 
-mongoose.connect(
-    'mongodb+srv://admin:admin@kcontrol-9uglk.gcp.mongodb.net/test?retryWrites=true&w=majority', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true,
-})
+    mongoose.connect(
+        'mongodb+srv://admin:admin@kcontrol-9uglk.gcp.mongodb.net/test?retryWrites=true&w=majority', {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        })
     
-mongoose.Promise =  global.Promise;
+        mongoose.Promise =  global.Promise;
+
 
 app.use(cors());
 app.use(morgan('dev'));
