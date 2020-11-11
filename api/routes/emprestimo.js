@@ -15,9 +15,13 @@ router.get("/", (req, res, next) => {
           return {
             _id: doc._id,
             idAluno: doc.idAluno,
+            nomeAluno: doc.nomeAluno,
             codigoMonitorEmprestimo: doc.codigoMonitorEmprestimo,
+            nomeMonitorEmprestimo: doc.nomeMonitorEmprestimo,
             codigoMonitorFinalizacao: doc.codigoMonitorFinalizacao,
-            idKits: doc.idKit,
+            nomeMonitorFinalizacao: doc.nomeMonitorFinalizacao,
+            idKits: doc.idKits,
+            nomeKits: doc.nomeKits,
             status: doc.status,
             descricao: doc.descricao,
             ocorrencia: doc.ocorrencia,
@@ -69,8 +73,11 @@ router.post("/", (req, res, next) => {
   const emprestimo = new Emprestimo({
     _id: new mongoose.Types.ObjectId(),
     idAluno: req.body.idAluno,
-    idKit: req.body.idKits,
+    nomeAluno: req.body.nomeAluno,
+    idKits: req.body.idKits,
+    nomeKits: req.body.nomeKits,
     codigoMonitorEmprestimo: req.body.codigoMonitorEmprestimo,
+    nomeMonitorEmprestimo: req.body.nomeMonitorEmprestimo,
   });
   emprestimo
     .save()
@@ -78,13 +85,6 @@ router.post("/", (req, res, next) => {
       console.log(result);
       res.status(201).json({
         mensagem: "Empréstimo cadastrado com sucesso!",
-        usuarioCriado: {
-          _id: result._id,
-          idAluno: result.idAluno,
-          idKits: result.idKits,
-          status: result.status,
-          codigoMonitorEmprestimo: result.codigoMonitorEmprestimo,
-        },
       });
     })
     .catch((err) => {
@@ -135,20 +135,20 @@ router.delete("/:id", (req, res, next) => {
 });
 
 // Delete all kits request
-router.delete('/really/all', (req, res, next) => {
+router.delete("/really/all", (req, res, next) => {
   Emprestimo.remove({})
-      .exec()
-      .then(result => {
-          res.status(200).json({
-              message: 'Todos os empréstimos apagados.',
-          })
-      })
-      .catch(err => {
-          console.log(err);
-          res.status(500).json({
-              error: err
-          })
-      })
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: "Todos os empréstimos apagados.",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
 });
 
 module.exports = router;
