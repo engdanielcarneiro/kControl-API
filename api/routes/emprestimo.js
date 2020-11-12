@@ -29,6 +29,7 @@ router.get("/", (req, res, next) => {
             _id: doc._id,
             idAluno: doc.idAluno,
             nomeAluno: doc.nomeAluno,
+            codigoAluno: doc.codigoAluno,
             codigoMonitorEmprestimo: doc.codigoMonitorEmprestimo,
             nomeMonitorEmprestimo: doc.nomeMonitorEmprestimo,
             codigoMonitorFinalizacao: doc.codigoMonitorFinalizacao,
@@ -58,9 +59,6 @@ router.get("/:id", (req, res, next) => {
   const id = req.params.id;
 
   Emprestimo.find({ _id: id })
-    .select(
-      "_id idAluno idKit descricao ocorrencia dtEmprestimo dtFinalizacaoEmprestimo status codigoMonitorEmprestimo codigoMonitorFinalizacao"
-    )
     .exec()
     .then((doc) => {
       if (doc) {
@@ -87,6 +85,7 @@ router.post("/", (req, res, next) => {
     _id: new mongoose.Types.ObjectId(),
     idAluno: req.body.idAluno,
     nomeAluno: req.body.nomeAluno,
+    codigoAluno: req.body.codigoAluno,
     idKits: req.body.idKits,
     nomeKits: req.body.nomeKits,
     codigoMonitorEmprestimo: req.body.codigoMonitorEmprestimo,
