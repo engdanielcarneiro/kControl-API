@@ -9,6 +9,19 @@ router.get("/", (req, res, next) => {
   Emprestimo.find()
     .exec()
     .then((docs) => {
+      // sort by name
+      docs.sort(function (a, b) {
+        var statusA = a.status.toUpperCase(); // ignore upper and lowercase
+        var statusB = b.status.toUpperCase(); // ignore upper and lowercase
+        if (statusA < statusB) {
+          return -1;
+        }
+        if (statusA > statusB) {
+          return 1;
+        }
+        // names must be equal
+        return 0;
+      });
       const response = {
         count: docs.length,
         emprestimos: docs.map((doc) => {
