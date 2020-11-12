@@ -4,7 +4,7 @@ const productSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     idAluno: {type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true},
     nomeAluno: {type: String, default: null, required: true},   
-    codigoAluno: {type: Number, default: null, required: true },   
+    codigoAluno: {type: String, default: null, required: true },   
     codigoMonitorEmprestimo: {type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true},
     nomeMonitorEmprestimo: {type: String, default: null, required: true},   
     codigoMonitorFinalizacao: {type: mongoose.Schema.Types.ObjectId, default: null, ref: 'Usuario'},
