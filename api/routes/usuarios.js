@@ -43,7 +43,7 @@ router.get("/", (req, res, next) => {
             curso: doc.curso,
             cpf: doc.cpf,
             dtNascimento: doc.dtNascimento,
-            btAdm: doc.btAdm,
+            perfil: doc.perfil,
             foto: doc.foto,
             url: doc.url,
             btKit: doc.btKit,
@@ -65,7 +65,9 @@ router.get("/", (req, res, next) => {
 router.get("/codigo/:codigoUsuario", (req, res, next) => {
   const codigo = req.params.codigoUsuario;
   Usuario.find({ codigo: codigo })
-    .select("nome codigo senha curso cpf dtNascimento btAdm _id foto url btKit")
+    .select(
+      "nome codigo senha curso cpf dtNascimento perfil _id foto url btKit"
+    )
     .exec()
     .then((doc) => {
       console.log("From database:", doc);
@@ -96,7 +98,9 @@ router.get("/codigo/:codigoUsuario", (req, res, next) => {
 router.get("/cpf/:cpf", (req, res, next) => {
   const cpf = req.params.cpf;
   Usuario.find({ cpf: cpf })
-    .select("nome codigo senha curso cpf dtNascimento btAdm _id foto url btKit")
+    .select(
+      "nome codigo senha curso cpf dtNascimento perfil _id foto url btKit"
+    )
     .exec()
     .then((doc) => {
       console.log("From database:", doc);
@@ -265,7 +269,7 @@ router.post("/login/codigo", (req, res, next) => {
         return res.status(401).json({
           message: "A autenticação falhou.",
         });
-      } else if (req.body.btApp ? true : usuario[0].btAdm === true) {
+      } else if (req.body.btApp ? true : usuario[0].perfil !== 3) {
         return res.status(200).json({
           message: "Logado com sucesso",
           usuario: usuario[0],
@@ -289,20 +293,20 @@ router.post("/login/cpf", (req, res, next) => {
   Usuario.find({ cpf: req.body.cpf })
     .exec()
     .then((usuario) => {
-        if (usuario.length < 1 || req.body.senha !== usuario[0].senha) {
-            return res.status(401).json({
-              message: "A autenticação falhou.",
-            });
-          } else if (req.body.btApp ? true : usuario[0].btAdm === true) {
-            return res.status(200).json({
-              message: "Logado com sucesso",
-              usuario: usuario[0],
-            });
-          } else {
-            return res.status(401).json({
-              message: "A autenticação falhou.",
-            });
-          }
+      if (usuario.length < 1 || req.body.senha !== usuario[0].senha) {
+        return res.status(401).json({
+          message: "A autenticação falhou.",
+        });
+      } else if (req.body.btApp ? true : usuario[0].perfil !== 3) {
+        return res.status(200).json({
+          message: "Logado com sucesso",
+          usuario: usuario[0],
+        });
+      } else {
+        return res.status(401).json({
+          message: "A autenticação falhou.",
+        });
+      }
     })
     .catch((err) => {
       console.log(err);
@@ -322,7 +326,7 @@ router.post("/", upload.single("foto"), (req, res, next) => {
     curso: req.body.curso,
     cpf: req.body.cpf,
     dtNascimento: req.body.dtNascimento,
-    btAdm: req.body.btAdm,
+    perfil: req.body.perfil,
   });
   usuario
     .save()
@@ -338,7 +342,7 @@ router.post("/", upload.single("foto"), (req, res, next) => {
           curso: result.curso,
           cpf: result.cpf,
           dtNascimento: result.dtNascimento,
-          btAdm: result.btAdm,
+          perfil: result.perfil,
           foto: result.foto,
           url: result.url,
           codigoRequest: {
@@ -424,7 +428,7 @@ router.delete("/:codigoUsuario", (req, res, next) => {
             curso: "String",
             cpf: "String",
             dtNascimento: "String",
-            btAdm: "Bool",
+            perfil: "Number",
             foto: "Arquivo png/jpeg",
           },
         },
