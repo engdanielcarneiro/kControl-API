@@ -416,22 +416,9 @@ router.delete("/:codigoUsuario", (req, res, next) => {
   Usuario.remove({ codigo: codigo })
     .exec()
     .then((result) => {
+      req.app.io.emit("RefreshPage", true);
       res.status(200).json({
         message: "Usuário deletado!",
-        request: {
-          type: "POST",
-          url: "http://localhost:3030/usuarios/",
-          data: {
-            nome: "String",
-            codigo: "Number",
-            senha: "String",
-            curso: "String",
-            cpf: "String",
-            dtNascimento: "String",
-            perfil: "Number",
-            foto: "Arquivo png/jpeg",
-          },
-        },
       });
     })
     .catch((err) => {

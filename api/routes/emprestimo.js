@@ -117,6 +117,7 @@ router.patch("/:id", (req, res, next) => {
   Emprestimo.update({ _id: id }, { $set: updateOps })
     .exec()
     .then((result) => {
+      req.app.io.emit("RefreshPage", true);
       res.status(200).json({
         message: "Emprestimo atualizado!",
       });
@@ -134,6 +135,7 @@ router.delete("/:id", (req, res, next) => {
   Emprestimo.remove({ _id: id })
     .exec()
     .then((result) => {
+      req.app.io.emit("RefreshPage", true);
       res.status(200).json({
         message: "Emprestimo deletado!",
       });
@@ -146,11 +148,12 @@ router.delete("/:id", (req, res, next) => {
     });
 });
 
-// Delete all kits request
+// Delete all emprestimos request
 router.delete("/really/all", (req, res, next) => {
   Emprestimo.remove({})
     .exec()
     .then((result) => {
+      req.app.io.emit("RefreshPage", true);
       res.status(200).json({
         message: "Todos os empréstimos apagados.",
       });
