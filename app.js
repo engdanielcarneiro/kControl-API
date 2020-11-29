@@ -22,7 +22,7 @@ const socketIo = require("socket.io");
 const io = socketIo(server, {
   cors: {
     // origin: "http://localhost:3000",
-    origin: "https://kitcontrol.herokuapp.com/",
+    origin: "http://kitcontrol.herokuapp.com/",
     methods: ["GET", "POST", "PATCH", "DELETE"],
   },
 });
