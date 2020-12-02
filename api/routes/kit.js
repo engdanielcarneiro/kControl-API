@@ -17,10 +17,7 @@ router.get("/", (req, res, next) => {
             nome: doc.nome,
             status: doc.status,
             descricao: doc.descricao,
-            kitRequest: {
-              type: "GET Kit por Nome",
-              url: "http://localhost:3030/kits/" + doc.nome,
-            },
+            ocorrencia: doc.ocorrencia,
           };
         }),
       };
@@ -45,11 +42,6 @@ router.get("/:nome", (req, res, next) => {
       if (doc) {
         return res.status(200).json({
           kit: doc,
-          request: {
-            type: "GET",
-            description: "Veja todos os kits",
-            url: "http://localhost:3030/kits/",
-          },
         });
       } else {
         return res.status(404).json({
@@ -76,11 +68,6 @@ router.get("/id/:id", (req, res, next) => {
       if (doc) {
         return res.status(200).json({
           kit: doc,
-          request: {
-            type: "GET",
-            description: "Veja todos os kits",
-            url: "http://localhost:3030/kits/",
-          },
         });
       } else {
         return res.status(404).json({
