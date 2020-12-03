@@ -90,6 +90,7 @@ router.post("/", (req, res, next) => {
     nome: req.body.nome,
     descricao: req.body.descricao,
     status: req.body.status,
+    ocorrencia: req.body.ocorrencia,
   });
   kit
     .save()
